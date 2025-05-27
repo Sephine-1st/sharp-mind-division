@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>replit</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <style>
+    /* colle le CSS ici */
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #f9f9f9;
+      color: #0b3d91;
+      /* bleu foncé */
+      padding: 1rem;
+      max-width: 480px;
+      margin: auto;
+    }
+
+    h1 {
+      color: #0b3d91;
+      /* bleu foncé */
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .question {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      text-align: center;
+      color: #0b3d91;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 0.6rem;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      color: #0b3d91;
+    }
+
+    button {
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      background-color: #40e0d0;
+      /* bleu Tiffany */
+      color: white;
+      transition: background-color 0.3s ease;
+      margin-right: 0.5rem;
+    }
+
+    button:hover {
+      background-color: #32bfbf;
+      /* un peu plus foncé */
+    }
+
+    .feedback {
+      font-size: 1.2rem;
+      margin-top: 1rem;
+      text-align: center;
+      min-height: 1.5rem;
+      color: #0b3d91;
+    }
+
+    .score {
+      margin-top: 1rem;
+      font-weight: bold;
+      text-align: center;
+      color: #0b3d91;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Quiz : Divisions</h1>
+  <div id="question" class="question"></div>
+  <input id="userAnswer" type="number" step="0.01" placeholder="Ta réponse ici" />
+  <button onclick="checkAnswer()">Valider</button>
+  <button onclick="stopQuiz()" style="margin-left:1rem; background:#dc3545; color:white;">Arrêter</button>
+
+  <div id="feedback" class="feedback"></div>
+  <div id="score" class="score"></div>
+
+  <script>
+    const questions = [
+      // Exemples difficiles
+      {q: "87 ÷ 5", a: 17.40},
+      {q: "123 ÷ 7", a: 17.57},
+      {q: "98 ÷ 4", a: 24.50},
+      {q: "215 ÷ 8", a: 26.88},
+      {q: "376 ÷ 6", a: 62.67},
+      {q: "142 ÷ 9", a: 15.78},
+      {q: "583 ÷ 11", a: 53.00},
+      {q: "789 ÷ 13", a: 60.69},
+      {q: "1024 ÷ 15", a: 68.27},
+      {q: "99 ÷ 16", a: 6.19},
+      {q: "455 ÷ 12", a: 37.92},
+      {q: "199 ÷ 7", a: 28.43},
+      {q: "301 ÷ 14", a: 21.50},
+      {q: "667 ÷ 18", a: 37.06},
+      {q: "314 ÷ 9", a: 34.89},
+      {q: "401 ÷ 11", a: 36.45},
+      {q: "808 ÷ 13", a: 62.15},
+      {q: "912 ÷ 19", a: 48.00},
+      {q: "679 ÷ 17", a: 39.94},
+      {q: "245 ÷ 6", a: 40.83},
+      {q: "735 ÷ 8", a: 91.88},
+      {q: "521 ÷ 7", a: 74.43},
+      {q: "493 ÷ 12", a: 41.08},
+      {q: "366 ÷ 11", a: 33.27},
+      {q: "980 ÷ 13", a: 75.38},
+      {q: "777 ÷ 9", a: 86.33},
+      {q: "625 ÷ 14", a: 44.64},
+      {q: "851 ÷ 16", a: 53.19},
+      {q: "997 ÷ 17", a: 58.65},
+      {q: "888 ÷ 15", a: 59.20},
+      {q: "459 ÷ 8", a: 57.38},
+      {q: "111 ÷ 13", a: 8.54},
+      {q: "972 ÷ 19", a: 51.16},
+      {q: "312 ÷ 7", a: 44.57},
+      {q: "663 ÷ 12", a: 55.25},
+      {q: "587 ÷ 15", a: 39.13},
+      {q: "374 ÷ 11", a: 34.00},
+      {q: "722 ÷ 9", a: 80.22},
+      {q: "314 ÷ 13", a: 24.15},
+      {q: "618 ÷ 16", a: 38.63},
+      {q: "1001 ÷ 18", a: 55.61},
+      {q: "803 ÷ 17", a: 47.24},
+      {q: "479 ÷ 14", a: 34.21},
+      {q: "212 ÷ 6", a: 35.33},
+      {q: "630 ÷ 11", a: 57.27},
+      {q: "788 ÷ 13", a: 60.62},
+      {q: "941 ÷ 16", a: 58.81},
+      {q: "367 ÷ 7", a: 52.43},
+      {q: "555 ÷ 9", a: 61.67},
+      {q: "649 ÷ 15", a: 43.27},
+
+      // Exemples moyens
+      {q: "1000 ÷ 12", a: 83.33},
+      {q: "500 ÷ 24", a: 20.83},
+      {q: "1200 ÷ 30", a: 40.00},
+      {q: "7500 ÷ 365", a: 20.55},
+      {q: "900 ÷ 52", a: 17.31},
+      {q: "10000 ÷ 250", a: 40.00},
+      {q: "75000 ÷ 12", a: 6250.00},
+      {q: "1200 ÷ 60", a: 20.00},
+      {q: "480 ÷ 8", a: 60.00},
+      {q: "2500 ÷ 36", a: 69.44},
+      {q: "3600 ÷ 90", a: 40.00},
+      {q: "1050 ÷ 15", a: 70.00},
+      {q: "2400 ÷ 20", a: 120.00},
+      {q: "18000 ÷ 365", a: 49.32},
+      {q: "5200 ÷ 13", a: 400.00},
+      {q: "7.99 ÷ 3", a: 2.66},
+      {q: "14.5 ÷ 4", a: 3.63},
+      {q: "99 ÷ 12", a: 8.25},
+      {q: "250 ÷ 6", a: 41.67},
+      {q: "180 ÷ 9", a: 20.00},
+      {q: "120 ÷ 7", a: 17.14},
+      {q: "35 ÷ 8", a: 4.38},
+      {q: "40 ÷ 3", a: 13.33},
+      {q: "100 ÷ 9", a: 11.11},
+      {q: "70 ÷ 6", a: 11.67},
+      {q: "150 ÷ 4.5", a: 33.33},
+      {q: "960 ÷ 24", a: 40.00},
+      {q: "625 ÷ 25", a: 25.00},
+      {q: "1500 ÷ 12", a: 125.00},
+      {q: "8000 ÷ 365", a: 21.92},
+      {q: "1800 ÷ 40", a: 45.00},
+      {q: "2700 ÷ 18", a: 150.00},
+      {q: "6500 ÷ 52", a: 125.00},
+      {q: "420 ÷ 20", a: 21.00},
+      {q: "90 ÷ 8", a: 11.25},
+      {q: "2400 ÷ 48", a: 50.00},
+      {q: "1800 ÷ 36", a: 50.00},
+      {q: "720 ÷ 15", a: 48.00},
+      {q: "1000 ÷ 20", a: 50.00},
+      {q: "6000 ÷ 150", a: 40.00},
+      {q: "4500 ÷ 60", a: 75.00},
+      {q: "3750 ÷ 25", a: 150.00},
+      {q: "8100 ÷ 90", a: 90.00},
+      {q: "2000 ÷ 16", a: 125.00},
+      {q: "300 ÷ 7", a: 42.86},
+      {q: "100 ÷ 3", a: 33.33},
+      {q: "100 ÷ 7", a: 14.29},
+      {q: "1000 ÷ 52", a: 19.23},
+      {q: "10000 ÷ 365", a: 27.40},
+      {q: "100 ÷ 2", a: 50.00},
+      {q: "100 ÷ 3", a: 33.33},
+      {q: "100 ÷ 4", a: 25.00},
+      {q: "100 ÷ 5", a: 20.00},
+      {q: "100 ÷ 6", a: 16.67},
+      {q: "100 ÷ 7", a: 14.29},
+      {q: "100 ÷ 8", a: 12.50},
+      {q: "100 ÷ 9", a: 11.11},
+      {q: "100 ÷ 10", a: 10.00},
+      {q: "100 ÷ 11", a: 9.09},
+      {q: "100 ÷ 12", a: 8.33},
+      {q: "100 ÷ 13", a: 7.69},
+      {q: "100 ÷ 14", a: 7.14},
+      {q: "100 ÷ 15", a: 6.67},
+      {q: "100 ÷ 16", a: 6.25},
+      {q: "100 ÷ 17", a: 5.88},
+      {q: "100 ÷ 18", a: 5.56},
+      {q: "100 ÷ 19", a: 5.26},
+      {q: "100 ÷ 20", a: 5.00},
+      {q: "100 ÷ 21", a: 4.76},
+      {q: "100 ÷ 22", a: 4.55},
+      {q: "100 ÷ 23", a: 4.35},
+      {q: "100 ÷ 24", a: 4.17},
+      {q: "100 ÷ 25", a: 4.00},
+      {q: "100 ÷ 26", a: 3.85},
+      {q: "100 ÷ 27", a: 3.70},
+      {q: "100 ÷ 28", a: 3.57},
+      {q: "100 ÷ 29", a: 3.45},
+      {q: "100 ÷ 30", a: 3.33},
+      {q: "100 ÷ 31", a: 3.23},
+      {q: "100 ÷ 32", a: 3.13},
+      {q: "100 ÷ 33", a: 3.03},
+      {q: "100 ÷ 34", a: 2.94},
+      {q: "100 ÷ 35", a: 2.86},
+      {q: "100 ÷ 45", a: 2.22},
+      {q: "100 ÷ 60", a: 1.67},
+      {q: "100 ÷ 70", a: 1.43},
+      {q: "100 ÷ 75", a: 1.33},
+      {q: "100 ÷ 80", a: 1.25},
+      {q: "100 ÷ 90", a: 1.11}
+    ];
+
+    let currentQuestion;
+    let score = 0;
+    let questionsAsked = 0;
+    const maxQuestions = 40; // nombre max de questions, modifiable
+
+    function pickQuestion() {
+      if (questionsAsked >= maxQuestions) {
+        endQuiz();
+        return;
+      }
+      const q = questions[Math.floor(Math.random() * questions.length)];
+      currentQuestion = q;
+      document.getElementById("question").textContent = q.q;
+      document.getElementById("userAnswer").value = "";
+      document.getElementById("feedback").textContent = "";
+      document.getElementById("userAnswer").disabled = false;
+      document.getElementById("userAnswer").focus();
+    }
+
+    function checkAnswer() {
+      const input = parseFloat(document.getElementById("userAnswer").value);
+      if (isNaN(input)) {
+        document.getElementById("feedback").textContent = "⛔️ Entre un nombre valide.";
+        return;
+      }
+
+      document.getElementById("userAnswer").disabled = true;
+
+      const correct = currentQuestion.a;
+      const isCorrect = Math.abs(input - correct) < 0.01;
+
+      if (isCorrect) {
+        score++;
+        document.getElementById("feedback").textContent = "✅ Bravo Séphine !";
+      } else {
+        document.getElementById("feedback").textContent = `❌ C'est Faux. (Bonne : ${correct.toFixed(2)})`;
+      }
+
+      questionsAsked++;
+      updateScore();
+
+      setTimeout(() => {
+        pickQuestion();
+      }, 1500);
+    }
+
+    function updateScore() {
+      document.getElementById("score").textContent = `Score : ${score} / ${questionsAsked}`;
+    }
+
+    function stopQuiz() {
+      endQuiz();
+    }
+
+    function endQuiz() {
+      document.getElementById("question").textContent = "🏁 Quiz terminé !";
+      document.getElementById("userAnswer").style.display = "none";
+      document.querySelector("button[onclick='checkAnswer()']").style.display = "none";
+      document.querySelector("button[onclick='stopQuiz()']").style.display = "none";
+      document.getElementById("feedback").textContent = `Ton score final est ${score} / ${questionsAsked}`;
+    }
+
+    // Démarre le quiz
+    updateScore();
+    pickQuestion();
+  </script>
+</body>
+
+</html>
